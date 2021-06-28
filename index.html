@@ -1,0 +1,62 @@
+<html lang="en">
+<head>
+    <title>Display Data Test</title>
+</head>
+
+<body></body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
+<script type="module">
+    let firstDataSet;
+    let maxCols;
+    let maxRows;
+
+    fetch('/2Me8Xl.json#data.json').then((data) => data.json())
+    .then((json) => {
+        firstDataSet = json.data;
+        maxCols = _.maxBy(firstDataSet, 'col').col;
+        maxRows = _.maxBy(firstDataSet, 'row').row;
+
+        const parsedData = parseData(firstDataSet, maxCols, maxRows);
+        const table = createTable(parsedData);
+
+        document.body.append(table);
+    });
+
+    function parseData(data, maxCols, maxRows) {
+        const parsedData = [];
+        for(let row = 0; row < maxRows; row++) {
+            const array = [];
+
+            for (let col = 0; col < maxCols; col++) {
+                array.push(data[row + col * (maxRows + 1)].value);
+            }
+
+            parsedData.push(array);
+        }
+
+        return parsedData;
+    }
+
+    function createTable(data) {
+        const table = document.createElement('table');
+
+        data.forEach((rowArray) => {
+            table.append(createRow(rowArray));
+        });
+
+        return table;
+    }
+
+    function createRow(rowArray) {
+        let row = document.createElement('tr');
+        rowArray.forEach((value) => {
+            const tdEl = document.createElement('td');
+            tdEl.innerText = value;
+            row.append(tdEl);
+        });
+
+        return row;
+    }
+</script>
+
+</html>
